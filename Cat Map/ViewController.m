@@ -11,6 +11,8 @@
 
 @interface ViewController ()
 
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
+@property (nonatomic, strong) UILabel *myAddress;
 @property (nonatomic, strong) MKMapView *mapView; // Object that provides you the map view.
 @property (nonatomic, strong) CLLocationManager *locationManager; // Object that provides you the location data.
 // NSLocationAlwaysUsageDescription OR NSLocationWhenInUseUsageDescription needs to be added to info.plist with NSString "Location is required"
@@ -26,7 +28,9 @@
     [super viewDidLoad];
     [self mapViewInstantiate];
     [self instantiateSearchBar];
+    [self instantiateLabels];
     self.view.backgroundColor = [UIColor colorWithRed:246.0f/255.0f green:123.0f/255.0f blue:70.0f/255.0f alpha:1.f];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -35,20 +39,42 @@
 
 #pragma mark - Instantiate Views
 
+- (void)instantiateLabels {
+    if (self.myAddress == nil) {
+        
+        self.myAddress = [[UILabel alloc] init];
+
+    }
+    
+    [self.view addSubview:self.myAddress];
+    [self.myAddress mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_bottom).mas_offset(-50);
+        make.height.mas_equalTo(50);
+        make.leading.mas_equalTo(self.view.mas_leading).with.offset(20);
+        make.trailing.mas_equalTo(self.view.mas_trailing).with.offset(-20);
+
+    }];
+    
+    self.myAddress.backgroundColor = [UIColor greenColor];
+}
+
 - (void)mapViewInstantiate {
     
     UIEdgeInsets padding = UIEdgeInsetsMake(80, 20, 200, 20);
 
     //    self.mapView = [[MKMapView alloc] initWithFrame:[self.view frame]]; // This set MKMapView instance to fill self.view
     
-    self.mapView = [[MKMapView alloc] init];
+    if (self.mapView == nil) {
+        self.mapView = [[MKMapView alloc] init];
+    }
+    
+    self.mapView.delegate = self;
+    
     [self.view addSubview: self.mapView];
     
     [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view).with.insets(padding);
     }];
-    
-    self.mapView.delegate = self;
     
 }
 
@@ -66,13 +92,28 @@
     
     [self.locationManager requestWhenInUseAuthorization];
     
-//    [self.locationManager startMonitoringSignificantLocationChanges];
-    
-//    [CLLocationManager locationServicesEnabled]; // is this required?
-    
     [[self mapView] setShowsUserLocation:YES];
     
     [self.locationManager startUpdatingLocation];
+    
+    [self reverseGeocode:self.locationManager.location];
+    
+}
+
+-(void)reverseGeocode:(CLLocation *)location {
+    CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+    
+        [geocoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            NSLog(@"Finding Address");
+            if (error) {
+                NSLog(@"Error: %@", error.description);
+            } else {
+                CLPlacemark *placemark = [placemarks lastObject];
+//                self.myAddress.text = [NSString stringWithFormat:@"%@", ];
+                NSLog(@"Success: %@", placemark.addressDictionary);
+                self.myAddress.text = placemark.addressDictionary[@"ZIP"];
+            }
+        }];
     
 }
 
@@ -94,7 +135,7 @@
     searchBar.tintColor = [UIColor colorWithRed:255.0f/255.0f green:75.0f/255.0f blue:10.0f/255.0f alpha:1.0f];
     searchBar.barTintColor = [UIColor colorWithRed:28.0f/255.0f green:28.0f/255.0f blue:28.0f/255.0f alpha:1.0f];
     UITextField *searchField = [searchBar valueForKey:@"searchField"];
-    searchField.backgroundColor = [UIColor colorWithRed:51.0f/255.0f green:51.0f/255.0f blue:51.0f/255.0f alpha:1.0f];
+    searchField.backgroundColor = searchBar.barTintColor;
     searchField.textColor = searchBar.tintColor;
 }
 
@@ -147,15 +188,14 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
     CLLocation *location = [locations lastObject];
-    NSLog(@"\nlocations: %@\n\n", locations);
     NSLog(@"\nlocation: %@\n\n", location);
-    
     
 }
 
 #pragma mark - <MKMapViewDelegate> MapKit delegate methods
 
 - (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation {
+    
     MKCoordinateRegion region;
     MKCoordinateSpan span;
     span.latitudeDelta = 0.005;
@@ -169,6 +209,7 @@
     region.center = location;
     
     [self.mapView setRegion:region animated:YES];
+    
 }
 
 @end

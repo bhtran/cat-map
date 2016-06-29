@@ -225,7 +225,7 @@
     
     UIButton *enterAddressButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.view addSubview:enterAddressButton];
-//    [button addTarget:self action:@selector(enterAddress) forControlEvents:UIControlEventTouchUpInside];
+    [enterAddressButton addTarget:self action:@selector(segue) forControlEvents:UIControlEventTouchUpInside];
     [enterAddressButton setTitle:@"Enter an address" forState:UIControlStateNormal];
 
     [enterAddressButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -237,10 +237,10 @@
     }];
     
     
-    
-    
 }
 
-
+-(void)segue {
+    [self performSegueWithIdentifier:@"addressVCSegue" sender:self];
+}
 
 @end

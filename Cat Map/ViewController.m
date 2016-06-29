@@ -17,7 +17,6 @@
 @property (nonatomic, strong) CLLocationManager *locationManager; // Object that provides you the location data.
 // NSLocationAlwaysUsageDescription OR NSLocationWhenInUseUsageDescription needs to be added to info.plist with NSString "Location is required"
 
-- (IBAction)getlocation:(id)sender;
 
 @end
 
@@ -29,6 +28,7 @@
     [self mapViewInstantiate];
     [self instantiateSearchBar];
     [self instantiateLabels];
+    [self createButton];
     self.view.backgroundColor = [UIColor colorWithRed:246.0f/255.0f green:123.0f/255.0f blue:70.0f/255.0f alpha:1.f];
     
 }
@@ -139,10 +139,6 @@
     searchField.textColor = searchBar.tintColor;
 }
 
-- (IBAction)getlocation:(id)sender {
-    [self locationInstantiate];
-    
-}
 
 //-(void)viewWillDisappear:(BOOL)animated {
 //    [super viewWillDisappear:animated];
@@ -211,6 +207,40 @@
     [self.mapView setRegion:region animated:YES];
     
 }
+
+- (void)createButton {
+    
+    UIButton *getLocationButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.view addSubview:getLocationButton];
+    [getLocationButton setTitle:@"Get current location" forState:UIControlStateNormal];
+    [getLocationButton addTarget:self action:@selector(locationInstantiate) forControlEvents:UIControlEventTouchUpInside];
+    
+    [getLocationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(self.mapView.mas_centerY).priority(249);
+        make.centerX.equalTo(self.mapView.mas_centerX);
+        make.top.equalTo(self.mapView.mas_bottom).with.offset(10).priority(250);
+        make.height.equalTo(self.mapView.mas_width).with.multipliedBy(.15);
+        make.width.equalTo(self.mapView.mas_width).with.multipliedBy(.45);
+    }];
+    
+    UIButton *enterAddressButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.view addSubview:enterAddressButton];
+//    [button addTarget:self action:@selector(enterAddress) forControlEvents:UIControlEventTouchUpInside];
+    [enterAddressButton setTitle:@"Enter an address" forState:UIControlStateNormal];
+
+    [enterAddressButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(self.mapView.mas_centerY).priority(249);
+        make.centerX.equalTo(self.mapView.mas_centerX);
+        make.top.equalTo(getLocationButton.mas_bottom).with.offset(10).priority(250);
+        make.height.equalTo(self.mapView.mas_height).with.multipliedBy(.15);
+        make.width.equalTo(self.mapView.mas_width).with.multipliedBy(.45);
+    }];
+    
+    
+    
+    
+}
+
 
 
 @end

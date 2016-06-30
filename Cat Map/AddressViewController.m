@@ -24,6 +24,19 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)instantiateTextLabels {
+    
+    UITextField *addressOneTextfield = [[UITextField alloc] init];
+    UILabel *addressOneLabel = [[UILabel alloc] init];
+    [self.view addSubview:addressOneLabel];
+    [self.view addSubview:addressOneTextfield]
+    
+    
+    
+    
+    
+}
+
 /*
 #pragma mark - Navigation
 

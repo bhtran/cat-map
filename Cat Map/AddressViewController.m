@@ -29,7 +29,7 @@
     UITextField *addressOneTextfield = [[UITextField alloc] init];
     UILabel *addressOneLabel = [[UILabel alloc] init];
     [self.view addSubview:addressOneLabel];
-    [self.view addSubview:addressOneTextfield]
+    [self.view addSubview:addressOneTextfield];
     
     
     
